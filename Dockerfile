@@ -8,19 +8,20 @@ ARG BASE_ENV=everything
 ARG TARGET=test
 
 # Container to throw an error if called with a bare `docker build .`
-FROM ubuntu:18.04 as error
+FROM ubuntu:20.04 as error
 RUN echo "\n\n\nHey! Use buildkit. See the Makefile or docs\n\n\n"
 RUN false
 
 # Base container is used for various release and test things
-FROM ubuntu:18.04 as minimal-base
+FROM ubuntu:20.04 as minimal-base
 
 # Runtime deps. Build deps go in the build or test containers
+ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update \
 	&& apt-get -y dist-upgrade \
 	&& apt-get install --no-install-recommends -y \
 	ruby rubygems rubygems-integration \
-	bsdtar \
+	libarchive-tools \
 	cpio \
 	debsigs \
 	pacman \
@@ -81,7 +82,7 @@ RUN apt-get install --no-install-recommends -y \
 	gcc make ruby-dev libc-dev
 ENV GEM_PATH /fpm
 ENV PATH "/fpm/bin:${PATH}"
-RUN gem install --no-ri --no-rdoc --install-dir=/fpm fpm
+RUN gem install --no-document --install-dir=/fpm fpm
 
 FROM build as release
 COPY --from=build /fpm /fpm
