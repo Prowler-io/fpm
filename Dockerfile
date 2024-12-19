@@ -8,12 +8,12 @@ ARG BASE_ENV=everything
 ARG TARGET=test
 
 # Container to throw an error if called with a bare `docker build .`
-FROM ubuntu:20.04 as error
+FROM ubuntu:24.04 as error
 RUN echo "\n\n\nHey! Use buildkit. See the Makefile or docs\n\n\n"
 RUN false
 
 # Base container is used for various release and test things
-FROM ubuntu:20.04 as minimal-base
+FROM ubuntu:24.04 as minimal-base
 
 # Runtime deps. Build deps go in the build or test containers
 ENV DEBIAN_FRONTEND noninteractive
@@ -31,7 +31,7 @@ RUN apt-get update \
 	zip \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& apt-get clean
-RUN adduser fpm 
+RUN adduser fpm
 
 # everything container includes all the scripting languages. These
 # greatly embiggen the underlying docker container, so they're
